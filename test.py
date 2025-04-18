@@ -1,86 +1,52 @@
-from selenium import webdriver
+from edit.base import setup_driver
+from edit.curser import Curser  # Import the Curser class
+from edit.scroll import scroll_until_visible
+from edit.wait import random_wait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from edit.wait import Wait
-from edit.scroll import scroll_down, scroll_until_visible
 
-# --- WebDriver 起動 ---
-# 指定された URL にアクセス
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-driver.get("https://rt-solutions.co.jp/")
+# Initialize WebDriver
+print("Initializing WebDriver...")
+driver = setup_driver(headless=False)
+
+# Initialize the Curser instance
+curser = Curser(driver)
+
+# Load the website
+website = "file:///C:/Users/Ray Uchida/Desktop/autoclicker/edit/test/company.html"
+driver.get(website)
+print(f"WebDriver initialized and page loaded: {website}")
 
 driver.implicitly_wait(10)
 
-# Wait クラスのインスタンスを作成
-wait = Wait()
-
-# <a href="https://rt-solutions.co.jp/company">会社概要</a> をクリック
-wait.random_wait()
+# Click "TOP" link using Curser
 try:
-    company_link = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.LINK_TEXT, "会社概要"))
-    )
-except:
-    # If "会社概要" is not found, click the menu button first
-    menu_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CLASS_NAME, "header__hMenu"))
-    )
-    menu_button.click()
-    wait.random_wait()  # Wait for the menu to expand
-    company_link = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.LINK_TEXT, "会社概要"))
-    )
+    print("Clicking 'TOP' link...")
+    top_element = driver.find_element(By.CSS_SELECTOR, "a[href='top.html']")
+    curser(top_element)  # Use the Curser class to click the element
+    print("Clicked 'TOP' link.")
+except Exception as e:
+    print(f"Error clicking 'TOP' link: {e}")
 
-company_link.click()
-
-# ページの一番下までスクロール
-scroll_down(driver)
-
-# 再度ランダムな時間待機
-wait.random_wait()
-
-# <a href="https://rt-solutions.co.jp/contact">お問い合わせ</a> をクリック
+# Click "ブログ" link using Curser
 try:
-    click1 = driver.find_element(By.LINK_TEXT, "お問い合わせ")
-except:
-    # If "お問い合わせ" is not found, click the menu button first
-    menu_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CLASS_NAME, "header__hMenu"))
-    )
-    menu_button.click()
-    wait.random_wait()  # Wait for the menu to expand
-    click1 = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.LINK_TEXT, "お問い合わせ"))
-    )
+    print("Clicking 'ブログ' link...")
+    blog_element = driver.find_element(By.CSS_SELECTOR, "a#blogLink")
+    curser(blog_element)  # Use the Curser class to click the element
+    print("Clicked 'ブログ' link.")
+except Exception as e:
+    print(f"Error clicking 'ブログ' link: {e}")
 
-# Scroll until the "お問い合わせ" link is visible
-scroll_down(driver, until_element=True, by=By.LINK_TEXT, value="お問い合わせ")
+# Scroll to "お問い合わせ" link and click using Curser
+try:
+    print("Scrolling to 'お問い合わせ' link...")
+    scroll_until_visible(driver, By.CSS_SELECTOR, "a[href='contact.html']")
+    contact_element = driver.find_element(By.CSS_SELECTOR, "a[href='contact.html']")
+    curser(contact_element)  # Use the Curser class to click the element
+    print("Clicked 'お問い合わせ' link.")
+except Exception as e:
+    print(f"Error clicking 'お問い合わせ' link: {e}")
 
-click1.click()
-
-# <textarea> をクリック
-wait.random_wait()
-
-# Scroll until the <textarea> element is visible
-scroll_until_visible(driver, by=By.XPATH, value="//textarea[@name='お問い合わせ内容']")
-
-click2 = driver.find_element(By.XPATH, "//textarea[@name='お問い合わせ内容']")
-click2.click()
-
-# テキストを入力
-wait.random_wait()
-type_area = driver.find_element(By.XPATH, "//textarea[@name='お問い合わせ内容']")
-type_area.send_keys("テストメッセージ")
-
-# 最後の待機
-wait.random_wait()
-
-# 必要に応じて、ページ遷移後の処理を記述
-print("コード終了")
-
-
-# ブラウザを閉じる
+# Close the browser
+print("Closing the browser...")
 driver.quit()
+print("Browser closed.")

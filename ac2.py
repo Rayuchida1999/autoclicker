@@ -2,174 +2,106 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from edit.scroll import scroll_until_visible  # Import scroll_modal_until_visible function
+from edit.wait import random_wait  # Import random_wait function
+from edit.type import human_like_typing  # Import human_like_typing function
 import time
 
 driver = webdriver.Chrome()
 wait = WebDriverWait(driver, 10)
+
 # Airワークを開く
 driver.get("https://connect.airregi.jp/login?client_id=AWR&redirect_uri=https%3A%2F%2Fconnect.airregi.jp%2Foauth%2Fauthorize%3Fclient_id%3DAWR%26hruid%3D2f009358-2460-486f-a59f-c3ec491a1bc7%26nonce%3DtfbQmTvduwQQKI1yOBVseohmvkip5HxBW64myEUFPCo%26redirect_uri%3Dhttps%253A%252F%252Fats.rct.airwork.net%252Fairplf%252Flogin%252Fcb%26response_type%3Dcode%26scope%3Dopenid%2Bprofile%2Bemail%26state%3D41EzprGIYqt8wcvzn0nSWUo0ckENV3A2_ASkN_fkftM")
 driver.implicitly_wait(10)
 
-#ifs2021アカウントででグイン
+# ifs2021アカウントでログイン
 account1 = driver.find_element(By.ID, 'account')
-account1.send_keys('ifs2021')
+human_like_typing(account1, 'ifs2021')  # Use human_like_typing for typing
+random_wait()  # Add random_wait after typing
 
 password1 = driver.find_element(By.ID, 'password')
-password1.send_keys('tukizi2024@')
+human_like_typing(password1, 'tukizi2024@')  # Use human_like_typing for typing
+random_wait()  # Add random_wait after typing
 
 login1 = driver.find_element(By.CLASS_NAME, 'primary')
 login1.click()
-
-
+random_wait()  # Add random_wait after clicking
 
 WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-#ポチポチ準備
-menu1 = driver.find_element(By.CLASS_NAME, 'styles_menuLink___TTEe')
-menu1.click()
-if menu1:
-    print("menuクリックされました。")
 
-driver.find_element(By.CSS_SELECTOR, ".styles_module__RPXUb[data-la-job-id='3587541'][aria-label='候補者を探す3587541']").click()
+# ポチポチ準備
+element = driver.find_element(By.CLASS_NAME, 'styles_menuLink___TTEe')
+element.click()  # Directly click the element
+print("menuクリックされました。")
+random_wait()  # Use random_wait
+
+scroll_until_visible(driver, By.CSS_SELECTOR, ".styles_module__RPXUb[data-la-job-id='3587541'][aria-label='候補者を探す3587541']", click=True)
 WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
+random_wait()
 
-#条件設定
-conditions1 = driver.find_element(By.CSS_SELECTOR, "button[data-la='cadidate_conditions_modal_open_btn_click']")
-conditions1.click()
+# 条件設定
+scroll_until_visible(driver, By.CSS_SELECTOR, "button[data-la='cadidate_conditions_modal_open_btn_click']", click=True)
+random_wait()  # Add random_wait after clicking
 WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
+# 条件設定 (inside modal)
+modal_selector = ".modal-open"  # Specify the modal's selector
 
+minGraduation1 = scroll_modal_until_visible(driver, modal_selector, By.NAME, "minimumFinalGraduationYear", click=False)  # Get the element without clicking
+if minGraduation1:
+    human_like_typing(minGraduation1, "2010")  # Use human_like_typing for typing
+    random_wait()  # Add random_wait after typing
+else:
+    print("Failed to locate the 'minimumFinalGraduationYear' input field.")
 
-minGraduation1 = driver.find_element(By.NAME, "minimumFinalGraduationYear")
-minGraduation1.send_keys(2010)
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
-
-
-collapse_btn1 = driver.find_element(By.CSS_SELECTOR, ".styles_collapse__Yl5mV[data-la='candidates_settings_detail_info_click_toggle']")
-driver.execute_script("arguments[0].scrollIntoView();", collapse_btn1)
-collapse_btn1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-
-if collapse_btn1:
-    print("collapseクリックされました。")
-time.sleep(2)
+scroll_modal_until_visible(driver, modal_selector, By.CSS_SELECTOR, ".styles_collapse__Yl5mV[data-la='candidates_settings_detail_info_click_toggle']", click=True)
+random_wait()  # Add random_wait after clicking
+print("collapseクリックされました。")
+random_wait()
 
 # 設定するを押す
-detail_con1 = driver.find_element(By.XPATH, "//button[text()='設定する']")
-driver.execute_script("arguments[0].scrollIntoView();", detail_con1)
-detail_con1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
+scroll_modal_until_visible(driver, modal_selector, By.XPATH, "//button[text()='設定する']", click=True)
+random_wait()  # Add random_wait after clicking
+print("detailconクリックされました。")
 
-if detail_con1:
-    print("detailconクリックされました。")
+# ITカテゴリの要素をクリック (inside modal)
+modal_selector = ".styles_form__LdvVl"  # Specify the modal's selector
 
+scroll_modal_until_visible(driver, modal_selector, By.XPATH, "//div[@class='styles_rowTitle__Q0NNL' and text()='IT']", click=True)
+print("ITカテゴリー押せました。")
+random_wait()  # Add random_wait after clicking
 
-# ITカテゴリの要素をクリック
-it_category1 = driver.find_element(By.XPATH, "//div[@class='styles_rowTitle__Q0NNL' and text()='IT']")
-driver.execute_script("arguments[0].scrollIntoView();", it_category1)
-it_category1.click()
-if it_category1 :
-    print("ITカテゴリー押せました。")
+# Example: Click multiple elements inside the modal
+categories = [
+    "//span[text()='システムエンジニア']",
+    "//span[text()='プログラマー']",
+    "//span[text()='プロジェクト管理']",
+    "//span[text()='プロダクトマネージャー']",
+    "//span[text()='フロントエンドエンジニア']",
+    "//span[contains(@id, ':r1v:') and text()='サーバーサイドエンジニア']",
+    "//span[text()='データベースエンジニア']",
+    "//span[text()='セキュリティエンジニア']",
+    "//span[text()='データエンジニア']"
+]
 
-programmer1 = driver.find_element(By.XPATH, "//span[text()='システムエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", programmer1)
-programmer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１")
-system_engineer1 = driver.find_element(By.XPATH, "//span[text()='プログラマー']")
-driver.execute_script("arguments[0].scrollIntoView();", system_engineer1)
-system_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。２")
-project_management1 = driver.find_element(By.XPATH, "//span[text()='プロジェクト管理']")
-driver.execute_script("arguments[0].scrollIntoView();", project_management1)
-project_management1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。３")
-product_manager1 = driver.find_element(By.XPATH, "//span[text()='プロダクトマネージャー']")
-driver.execute_script("arguments[0].scrollIntoView();", product_manager1)
-product_manager1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。４")
-front_engineer1 = driver.find_element(By.XPATH, "//span[text()='フロントエンドエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", front_engineer1)
-front_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。５")
-server_engineer1 = driver.find_element(By.XPATH, "//span[contains(@id, ':r1v:') and text()='サーバーサイドエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", server_engineer1)
-server_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。６")
-database_engineer1 =  wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='データベースエンジニア']")))
-driver.execute_script("arguments[0].scrollIntoView();", database_engineer1)
-database_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。７")
-network_engineer1 = driver.find_element(By.XPATH, "//span[text()='データベースエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", network_engineer1)
-driver.execute_script("document.querySelector('h3').style.display='none';")
-network_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。８")
-security_engineer1 = driver.find_element(By.XPATH, "//span[text()='セキュリティエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", security_engineer1)
-security_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。９")
-data_engineer1 = driver.find_element(By.XPATH, "//span[text()='データエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", data_engineer1)
-data_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１０")
+for category in categories:
+    scroll_modal_until_visible(driver, modal_selector, By.XPATH, category, click=True)
+    random_wait()  # Add random_wait between each category
+    print(f"クリックしました: {category}")
 
-creative_design1 = driver.find_element(By.XPATH, "//div[@class='styles_rowTitle__Q0NNL' and text()='クリエイティブ/デザイン職']")
-driver.execute_script("arguments[0].scrollIntoView();", creative_design1)
-creative_design1.click()
+# 保存、検索 (inside modal)
+scroll_modal_until_visible(driver, modal_selector, By.XPATH, "//button[@class='styles_module__kr35h' and text()='保存する']", click=True)
+random_wait()  # Add random_wait after clicking
+scroll_until_visible(driver, By.XPATH, "//button[@class='styles_module__kr35h' and text()='検索する']", click=True)
+random_wait()  # Add random_wait after clicking
 WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print('creativeクリックしました。')
+random_wait()
 
-web_service1 = driver.find_element(By.XPATH, "//span[text()='Webサービス/制作']")
-driver.execute_script("arguments[0].scrollIntoView();", data_engineer1)
-web_service1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１１")
-ad1 = driver.find_element(By.XPATH, "//span[text()='広告/グラフィック']")
-driver.execute_script("arguments[0].scrollIntoView();", data_engineer1)
-ad1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１２")
-game1 = driver.find_element(By.XPATH,"//span[text()='ゲーム']")
-driver.execute_script("arguments[0].scrollIntoView();", data_engineer1)
-game1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１３")
-
-#保存、検索
-save1 = driver.find_element(By.XPATH, "//button[@class='styles_module__kr35h' and text()='保存する']")
-driver.execute_script("arguments[0].scrollIntoView();", save1)
-save1.click()
-
-search1 = driver.find_element(By.XPATH, "//button[@class='styles_module__kr35h' and text()='検索する']")
-driver.execute_script("arguments[0].scrollIntoView();", search1)
-search1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
-
-#順序を変える
-order_change1 = driver.find_element(By.XPATH, "//select[contains(@class, 'styles_module__EA2he') and contains(@class, 'styles_selectBox__tBbi2')]")
-order_change1.click()
-if order_change1:
-    print('orderクリックしました')
-    time.sleep(1)
-order_select1 = driver.find_element(By.XPATH, "//option[text()='新着順']")
-order_select1.click()
-if order_select1:
-    print('order選択しました。')
-
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
+# 順序を変える
+scroll_until_visible(driver, By.XPATH, "//select[contains(@class, 'styles_module__EA2he') and contains(@class, 'styles_selectBox__tBbi2')]", click=True)
+random_wait()  # Add random_wait after clicking
+scroll_until_visible(driver, By.XPATH, "//option[text()='新着順']", click=True)
+random_wait()  # Add random_wait after clicking
+print('order選択しました。')
 
 while True:
     WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
@@ -178,12 +110,12 @@ while True:
     if not candidates:
         try:
             # 次ページがあれば押してループ続行
-            next_button = driver.find_element(By.XPATH, "//a[contains(@class, 'styles_next__3LCdl')]")
-            next_button.click()
+            scroll_until_visible(driver, By.XPATH, "//a[contains(@class, 'styles_next__3LCdl')]", click=True)
+            random_wait()  # Add random_wait after clicking
             print('次のページに移動')
 
             WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-            time.sleep(3)  # 読み込み待ち
+            random_wait()  # Use random_wait
 
             # 次のページで年齢要素が存在するかチェック
             first_age_elements = driver.find_elements(By.XPATH, ".//p[1]")
@@ -204,35 +136,36 @@ while True:
         try:
             # 年齢を取得
             age_element = candidate.find_element(By.XPATH, ".//p[1]")
-            driver.execute_script("arguments[0].scrollIntoView();", age_element)
+            scroll_until_visible(driver, By.XPATH, ".//p[1]")  # Use scroll_until_visible
+            random_wait()  # Add random_wait after scrolling
             age_text = age_element.text.strip().replace("歳", "")
             
             # 年齢の値を検証
             if not age_text.isdigit():
                 print(f"無効な年齢データ: '{age_text}' - スキップ")
                 invalid_age_count += 1
-                time.sleep(2)
+                random_wait()  # Add random_wait
                 continue
             
             age = int(age_text)
             
             if age >= 35:
                 # 「非表示」ボタンをクリック
-                hide_button = candidate.find_element(By.XPATH, ".//button[text()='非表示']")
-                hide_button.click()
+                scroll_until_visible(candidate, By.XPATH, ".//button[text()='非表示']", click=True)
+                random_wait()  # Add random_wait after clicking
                 print('35歳以上のため非公開')
             else:
                 # 「アプローチ」ボタンをクリック
-                approach_button = candidate.find_element(By.XPATH, ".//button[text()='アプローチ']")
-                approach_button.click()
+                scroll_until_visible(candidate, By.XPATH, ".//button[text()='アプローチ']", click=True)
+                random_wait()  # Add random_wait after clicking
                 print('35歳以下のためアプローチ')
 
                 # 「アプローチを送る」ボタンをクリック
-                send_approach_button = driver.find_element(By.XPATH, "//button[text()='アプローチを送る']")
-                send_approach_button.click()
+                scroll_until_visible(driver, By.XPATH, "//button[text()='アプローチを送る']", click=True)
+                random_wait()  # Add random_wait after clicking
             
             WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-            time.sleep(3)
+            random_wait()  # Use random_wait
 
         except Exception as e:
             print(f"エラー: {e}")
@@ -240,11 +173,11 @@ while True:
     # 無効な年齢データがすべての場合は次のページへ
     if invalid_age_count == len(candidates):
         try:
-            next_button = driver.find_element(By.XPATH, "//a[contains(@class, 'styles_next__3LCdl')]")
-            next_button.click()
+            scroll_until_visible(driver, By.XPATH, "//a[contains(@class, 'styles_next__3LCdl')]", click=True)
+            random_wait()  # Add random_wait after clicking
             print("無効なデータのみのため次のページへ")
             WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-            time.sleep(3)
+            random_wait()  # Use random_wait
             continue
         except:
             print("次ページなし。処理終了")
@@ -252,15 +185,13 @@ while True:
             break
 
     WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-    time.sleep(2)  # ページ内処理待機
-
+    random_wait()  # ページ内処理待機
 
 # ブラウザを閉じる
 driver.quit()
-print ('IFS終了')
+print('IFS終了')
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>IFSからSystemSに移動
-
 
 driver = webdriver.Chrome()
 wait = WebDriverWait(driver, 10)
@@ -269,166 +200,90 @@ wait = WebDriverWait(driver, 10)
 driver.get("https://connect.airregi.jp/login?client_id=AWR&redirect_uri=https%3A%2F%2Fconnect.airregi.jp%2Foauth%2Fauthorize%3Fclient_id%3DAWR%26hruid%3D2f009358-2460-486f-a59f-c3ec491a1bc7%26nonce%3DtfbQmTvduwQQKI1yOBVseohmvkip5HxBW64myEUFPCo%26redirect_uri%3Dhttps%253A%252F%252Fats.rct.airwork.net%252Fairplf%252Flogin%252Fcb%26response_type%3Dcode%26scope%3Dopenid%2Bprofile%2Bemail%26state%3D41EzprGIYqt8wcvzn0nSWUo0ckENV3A2_ASkN_fkftM")
 driver.implicitly_wait(10)
 
-#ifs2021アカウントででグイン
+# ifs2021アカウントでログイン
 account1 = driver.find_element(By.ID, 'account')
-account1.send_keys('SystemS2024@')
+human_like_typing(account1, 'SystemS2024@')  # Use human_like_typing for typing
+random_wait()  # Add random_wait after typing
 
 password1 = driver.find_element(By.ID, 'password')
-password1.send_keys('tukizi2024@')
+human_like_typing(password1, 'tukizi2024@')  # Use human_like_typing for typing
+random_wait()  # Add random_wait after typing
 
 login1 = driver.find_element(By.CLASS_NAME, 'primary')
 login1.click()
-
-
+random_wait()  # Add random_wait after clicking
 
 WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-#ポチポチ準備
-menu1 = driver.find_element(By.CLASS_NAME, 'styles_menuLink___TTEe')
-menu1.click()
-if menu1:
-    print("menuクリックされました。")
-WebDriverWait(driver, 10).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "a.styles_module__RPXUb[data-la-job-id='5272854'][aria-label='候補者を探す5272854']"))
-).click()
-time.sleep(2)
 
-#条件設定
-conditions1 = driver.find_element(By.CSS_SELECTOR, "button[data-la='cadidate_conditions_modal_open_btn_click']")
-conditions1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
+# ポチポチ準備
+random_wait()  # Use random_wait
+scroll_until_visible(driver, By.CLASS_NAME, 'styles_menuLink___TTEe', click=True)  # Use scroll_until_visible
+random_wait()  # Add random_wait after clicking
+print("menuクリックされました。")
 
-minGraduation1 = driver.find_element(By.NAME, "minimumFinalGraduationYear")
-minGraduation1.send_keys(2010)
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
+random_wait()  # Use random_wait
+scroll_until_visible(driver, By.CSS_SELECTOR, "a.styles_module__RPXUb[data-la-job-id='5272854'][aria-label='候補者を探す5272854']", click=True)
+random_wait()  # Add random_wait after clicking
 
+# 条件設定 (inside modal)
+modal_selector1 = ".modal-open"  # Specify the modal's selector
 
-collapse_btn1 = driver.find_element(By.CSS_SELECTOR, ".styles_collapse__Yl5mV[data-la='candidates_settings_detail_info_click_toggle']")
-driver.execute_script("arguments[0].scrollIntoView();", collapse_btn1)
-collapse_btn1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
+minGraduation1 = scroll_modal_until_visible(driver, modal_selector1, By.NAME, "minimumFinalGraduationYear", click=False)  # Get the element without clicking
+if minGraduation1:
+    human_like_typing(minGraduation1, "2010")  # Use human_like_typing for typing
+    random_wait()  # Add random_wait after typing
+else:
+    print("Failed to locate the 'minimumFinalGraduationYear' input field.")
 
-if collapse_btn1:
-    print("collapseクリックされました。")
-time.sleep(2)
+scroll_modal_until_visible(driver, modal_selector1, By.CSS_SELECTOR, ".styles_collapse__Yl5mV[data-la='candidates_settings_detail_info_click_toggle']", click=True)
+random_wait()  # Add random_wait after clicking
+print("collapseクリックされました。")
+random_wait()
 
 # 設定するを押す
-detail_con1 = driver.find_element(By.XPATH, "//button[text()='設定する']")
-driver.execute_script("arguments[0].scrollIntoView();", detail_con1)
-detail_con1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
+scroll_modal_until_visible(driver, modal_selector1, By.XPATH, "//button[text()='設定する']", click=True)
+random_wait()  # Add random_wait after clicking
+print("detailconクリックされました。")
 
+# ITカテゴリの要素をクリック (inside modal)
+modal_selector2 = ".styles_form__LdvVl"  # Specify the modal's selector
 
-if detail_con1:
-    print("detailconクリックされました。")
+scroll_modal_until_visible(driver, modal_selector2, By.XPATH, "//div[@class='styles_rowTitle__Q0NNL' and text()='IT']", click=True)
+random_wait()  # Add random_wait after clicking
+print("ITカテゴリー押せました。")
 
+# Example: Click multiple elements inside the modal
+categories = [
+    "//span[text()='システムエンジニア']",
+    "//span[text()='プログラマー']",
+    "//span[text()='プロジェクト管理']",
+    "//span[text()='プロダクトマネージャー']",
+    "//span[text()='フロントエンドエンジニア']",
+    "//span[contains(@id, ':r1v:') and text()='サーバーサイドエンジニア']",
+    "//span[text()='データベースエンジニア']",
+    "//span[text()='セキュリティエンジニア']",
+    "//span[text()='データエンジニア']"
+]
 
-# ITカテゴリの要素をクリック
-it_category1 = driver.find_element(By.XPATH, "//div[@class='styles_rowTitle__Q0NNL' and text()='IT']")
-driver.execute_script("arguments[0].scrollIntoView();", it_category1)
-it_category1.click()
-if it_category1 :
-    print("ITカテゴリー押せました。")
+for category in categories:
+    scroll_modal_until_visible(driver, modal_selector2, By.XPATH, category, click=True)
+    random_wait()  # Add random_wait between each category
+    print(f"クリックしました: {category}")
 
-programmer1 = driver.find_element(By.XPATH, "//span[text()='システムエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", programmer1)
-programmer1.click()
+# 保存、検索 (inside modal)
+scroll_modal_until_visible(driver, modal_selector2, By.XPATH, "//button[@class='styles_module__kr35h' and text()='保存する']", click=True)
+random_wait()  # Add random_wait after clicking
+scroll_until_visible(driver, By.XPATH, "//button[@class='styles_module__kr35h' and text()='検索する']", click=True)
+random_wait()  # Add random_wait after clicking
 WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１")
-system_engineer1 = driver.find_element(By.XPATH, "//span[text()='プログラマー']")
-driver.execute_script("arguments[0].scrollIntoView();", system_engineer1)
-system_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。２")
-project_management1 = driver.find_element(By.XPATH, "//span[text()='プロジェクト管理']")
-driver.execute_script("arguments[0].scrollIntoView();", project_management1)
-project_management1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。３")
-product_manager1 = driver.find_element(By.XPATH, "//span[text()='プロダクトマネージャー']")
-driver.execute_script("arguments[0].scrollIntoView();", product_manager1)
-product_manager1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。４")
-front_engineer1 = driver.find_element(By.XPATH, "//span[text()='フロントエンドエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", front_engineer1)
-front_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。５")
-server_engineer1 = driver.find_element(By.XPATH, "//span[contains(@id, ':r1v:') and text()='サーバーサイドエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", server_engineer1)
-server_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。６")
-database_engineer1 =  wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='データベースエンジニア']")))
-driver.execute_script("arguments[0].scrollIntoView();", database_engineer1)
-database_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。７")
-network_engineer1 = driver.find_element(By.XPATH, "//span[text()='データベースエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", network_engineer1)
-driver.execute_script("document.querySelector('h3').style.display='none';")
-network_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。８")
-security_engineer1 = driver.find_element(By.XPATH, "//span[text()='セキュリティエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", security_engineer1)
-security_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。９")
-data_engineer1 = driver.find_element(By.XPATH, "//span[text()='データエンジニア']")
-driver.execute_script("arguments[0].scrollIntoView();", data_engineer1)
-data_engineer1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１０")
+random_wait()
 
-creative_design1 = driver.find_element(By.XPATH, "//div[@class='styles_rowTitle__Q0NNL' and text()='クリエイティブ/デザイン職']")
-driver.execute_script("arguments[0].scrollIntoView();", creative_design1)
-creative_design1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print('creativeクリックしました。')
-
-web_service1 = driver.find_element(By.XPATH, "//span[text()='Webサービス/制作']")
-driver.execute_script("arguments[0].scrollIntoView();", data_engineer1)
-web_service1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１１")
-ad1 = driver.find_element(By.XPATH, "//span[text()='広告/グラフィック']")
-driver.execute_script("arguments[0].scrollIntoView();", data_engineer1)
-ad1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１２")
-game1 = driver.find_element(By.XPATH,"//span[text()='ゲーム']")
-driver.execute_script("arguments[0].scrollIntoView();", data_engineer1)
-game1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-print("クリックしました。１３")
-
-#保存、検索
-save1 = driver.find_element(By.XPATH, "//button[@class='styles_module__kr35h' and text()='保存する']")
-driver.execute_script("arguments[0].scrollIntoView();", save1)
-save1.click()
-
-search1 = driver.find_element(By.XPATH, "//button[@class='styles_module__kr35h' and text()='検索する']")
-driver.execute_script("arguments[0].scrollIntoView();", search1)
-search1.click()
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
-
-#順序を変える
-order_change1 = driver.find_element(By.XPATH, "//select[contains(@class, 'styles_module__EA2he') and contains(@class, 'styles_selectBox__tBbi2')]")
-order_change1.click()
-if order_change1:
-    print('orderクリックしました')
-    time.sleep(1)
-order_select1 = driver.find_element(By.XPATH, "//option[text()='新着順']")
-order_select1.click()
-if order_select1:
-    print('order選択しました。')
-
-WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-time.sleep(2)
+# 順序を変える
+scroll_until_visible(driver, By.XPATH, "//select[contains(@class, 'styles_module__EA2he') and contains(@class, 'styles_selectBox__tBbi2')]", click=True)
+random_wait()  # Add random_wait after clicking
+scroll_until_visible(driver, By.XPATH, "//option[text()='新着順']", click=True)
+random_wait()  # Add random_wait after clicking
+print('order選択しました。')
 
 while True:
     WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
@@ -437,12 +292,12 @@ while True:
     if not candidates:
         try:
             # 次ページがあれば押してループ続行
-            next_button = driver.find_element(By.XPATH, "//a[contains(@class, 'styles_next__3LCdl')]")
-            next_button.click()
+            scroll_until_visible(driver, By.XPATH, "//a[contains(@class, 'styles_next__3LCdl')]", click=True)
+            random_wait()  # Add random_wait after clicking
             print('次のページに移動')
 
             WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-            time.sleep(3)  # 読み込み待ち
+            random_wait()  # Use random_wait
 
             # 次のページで年齢要素が存在するかチェック
             first_age_elements = driver.find_elements(By.XPATH, ".//p[1]")
@@ -463,35 +318,36 @@ while True:
         try:
             # 年齢を取得
             age_element = candidate.find_element(By.XPATH, ".//p[1]")
-            driver.execute_script("arguments[0].scrollIntoView();", age_element)
+            scroll_until_visible(driver, By.XPATH, ".//p[1]")  # Use scroll_until_visible
+            random_wait()  # Add random_wait after scrolling
             age_text = age_element.text.strip().replace("歳", "")
             
             # 年齢の値を検証
             if not age_text.isdigit():
                 print(f"無効な年齢データ: '{age_text}' - スキップ")
                 invalid_age_count += 1
-                time.sleep(2)
+                random_wait()  # Add random_wait
                 continue
             
             age = int(age_text)
             
             if age >= 35:
                 # 「非表示」ボタンをクリック
-                hide_button = candidate.find_element(By.XPATH, ".//button[text()='非表示']")
-                hide_button.click()
+                scroll_until_visible(candidate, By.XPATH, ".//button[text()='非表示']", click=True)
+                random_wait()  # Add random_wait after clicking
                 print('35歳以上のため非公開')
             else:
                 # 「アプローチ」ボタンをクリック
-                approach_button = candidate.find_element(By.XPATH, ".//button[text()='アプローチ']")
-                approach_button.click()
+                scroll_until_visible(candidate, By.XPATH, ".//button[text()='アプローチ']", click=True)
+                random_wait()  # Add random_wait after clicking
                 print('35歳以下のためアプローチ')
 
                 # 「アプローチを送る」ボタンをクリック
-                send_approach_button = driver.find_element(By.XPATH, "//button[text()='アプローチを送る']")
-                send_approach_button.click()
+                scroll_until_visible(driver, By.XPATH, "//button[text()='アプローチを送る']", click=True)
+                random_wait()  # Add random_wait after clicking
             
             WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-            time.sleep(3)
+            random_wait()  # Use random_wait
 
         except Exception as e:
             print(f"エラー: {e}")
@@ -499,11 +355,11 @@ while True:
     # 無効な年齢データがすべての場合は次のページへ
     if invalid_age_count == len(candidates):
         try:
-            next_button = driver.find_element(By.XPATH, "//a[contains(@class, 'styles_next__3LCdl')]")
-            next_button.click()
+            scroll_until_visible(driver, By.XPATH, "//a[contains(@class, 'styles_next__3LCdl')]", click=True)
+            random_wait()  # Add random_wait after clicking
             print("無効なデータのみのため次のページへ")
             WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-            time.sleep(3)
+            random_wait()  # Use random_wait
             continue
         except:
             print("次ページなし。処理終了")
@@ -511,10 +367,8 @@ while True:
             break
 
     WebDriverWait(driver, 10).until(lambda d: d.execute_script("return document.readyState") == "complete")
-    time.sleep(2)  # ページ内処理待機
-
+    random_wait()  # ページ内処理待機
 
 # ブラウザを閉じる
 driver.quit()
-
-print ('SystemS終了')
+print('SystemS終了')

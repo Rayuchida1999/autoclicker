@@ -1,20 +1,19 @@
 import time
 import random
 
-class Wait:
-    def __init__(self, min_seconds=1, max_seconds=5):
-        self.min_seconds = min_seconds
-        self.max_seconds = max_seconds
+def random_wait():
+    """
+    Waits for a random amount of time.
+    - 95% chance: Wait between 2 and 5 seconds.
+    - 5% chance: Wait between 30 minutes and 1 hour 45 minutes.
+    """
+    if random.random() < 0.001:  # 0.1% chance
+        wait_time = random.randint(1800, 6300)  # 30 minutes (1800 seconds) to 1 hour 45 minutes (6300 seconds)
+        print(f"Long random wait: {wait_time} seconds.")
+    else:  # 95% chance
+        wait_time = random.uniform(2, 7)  # 2 to 7 seconds
+        print(f"Short random wait: {wait_time:.2f} seconds.")
+    
+    time.sleep(wait_time)
 
-    def random_wait(self):
-        # ランダムな秒数を生成して待機
-        wait_time = random.uniform(self.min_seconds, self.max_seconds)
-        time.sleep(wait_time)
 
-# Waitクラスを使用してランダムな秒数待つ
-wait = Wait(1, 3)
-print(f"待機時間: {wait.min_seconds}～{wait.max_seconds} 秒の間でランダム")
-wait.random_wait()
-
-# 次の操作（例：クリック）など
-print("クリック実行！")
